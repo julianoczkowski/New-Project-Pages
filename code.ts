@@ -1,5 +1,3 @@
-//import axios from "axios";
-
 async function main() {
   // Define the names of pages you want to create
   let pages = [
