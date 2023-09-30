@@ -1,24 +1,31 @@
 async function main() {
   // Define the names of pages you want to create
   let pages = [
-    "📘 Cover",
+    "👋 Welcome",
+    "📄 Index",
+    " ",
     "■ —— ABOUT THIS PROJECT —— ■",
     "💭 Purpose Of This Project",
     "😎 Who Is This For?",
     "🔗 For Development",
+    " ",
     "■ —— WORK IN PROGRESS —— ■",
     "▢ User Flow - v1 - 🔵 In Progress",
     "▢ Wireframing - v1 - 🔵 In Progress",
     "▢ Design - v1 - 🔵 In Progress",
+    " ",
     "■ —— COMPLETED —— ■",
     "▢ User Flow - v1 - 🟢 Completed",
     "▢ Wireframing - v1 - 🟢 Completed",
     "▢ Design - v1 - 🟢 Completed",
+    " ",
     "■ —— INSPIRATIONS & SOURCES —— ■",
     "▢ Concepts",
     "▢ References",
+    " ",
     "■ —— BUILDING BLOCKS —— ■",
     "▢ My Local Components",
+    " ",
     "■ —— GRAVEYARD —— ■",
     "▢ Gone but not forgotten",
   ];
@@ -40,9 +47,9 @@ async function main() {
     "▢ Gone but not forgotten",
   ];
 
-  // Rename the current page to "Cover"
+  // Rename the current page to "Welcome"
   let currentPage = figma.currentPage;
-  currentPage.name = "📘 Cover";
+  currentPage.name = "👋 Welcome";
   currentPage.backgrounds = [
     {
       type: "SOLID",
@@ -50,9 +57,9 @@ async function main() {
     },
   ];
 
-  // Add a white frame to the "Cover" page
+  // Add a white frame to the "Welcome" page
   const whiteFrame = figma.createFrame();
-  whiteFrame.name = "Place Your Cover Here";
+  whiteFrame.name = "Place Your Cover Image Here";
   whiteFrame.resize(1600, 960);
   whiteFrame.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
   currentPage.appendChild(whiteFrame);
@@ -94,30 +101,6 @@ async function main() {
           },
         ];
         break;
-      case "💭 Purpose Of This Project":
-        newPage.backgrounds = [
-          {
-            type: "SOLID",
-            color: { r: 1, g: 0.78, b: 0 }, // FFC700 (Yellow)
-          },
-        ];
-        break;
-      case "😎 Who Is This For?":
-        newPage.backgrounds = [
-          {
-            type: "SOLID",
-            color: { r: 1, g: 0.78, b: 0 }, // FFC700 (Yellow)
-          },
-        ];
-        break;
-      case "🔗 For Development":
-        newPage.backgrounds = [
-          {
-            type: "SOLID",
-            color: { r: 1, g: 0.78, b: 0 }, // FFC700 (Yellow)
-          },
-        ];
-        break;
       case "■ —— WORK IN PROGRESS —— ■":
         newPage.backgrounds = [
           {
@@ -150,6 +133,14 @@ async function main() {
           },
         ];
         break;
+      case "■ —— GRAVEYARD —— ■":
+        newPage.backgrounds = [
+          {
+            type: "SOLID",
+            color: { r: 0.1, g: 0.1, b: 0.1 }, // 1A1A1A
+          },
+        ];
+        break;
       case "▢ User Flow - v1 - 🔵 In Progress":
       case "▢ Wireframing - v1 - 🔵 In Progress":
       case "▢ Design - v1 - 🔵 In Progress":
@@ -159,8 +150,11 @@ async function main() {
       case "▢ Concepts":
       case "▢ References":
       case "▢ My Local Components":
-      case "■ —— GRAVEYARD —— ■":
       case "▢ Gone but not forgotten":
+      case "📄 Index":
+      case "💭 Purpose Of This Project":
+      case "😎 Who Is This For?":
+      case "🔗 For Development":
         newPage.backgrounds = [
           {
             type: "SOLID",
@@ -301,8 +295,6 @@ async function main() {
 
     // Map for section names and their descriptions
     const sectionDescriptions = {
-      //"📘 Cover":
-      // "Head over to my Community page and grab this template's assets. For more details, visit: figma.com/@julianoczkowski",
       "■ —— ABOUT THIS PROJECT —— ■":
         "The secret sauce behind our genius. Dive in, it's not just about pixels, you know!",
       "■ —— WORK IN PROGRESS —— ■":
@@ -350,8 +342,68 @@ async function main() {
 
   // Notify the user and close the plugin
   figma.notify("🎉 New Pages Added 🎉");
+
+  await createIndexPage();
+
   figma.closePlugin();
 }
 
-// Run the main function
-main();
+// createIndexPage function
+async function createIndexPage() {
+  let indexPage = figma.root.findChild(
+    (child) => child.name === "📄 Index"
+  ) as PageNode;
+
+  if (!indexPage) {
+    indexPage = figma.createPage();
+    indexPage.name = "📄 Index";
+  }
+
+  // Switch to the "Index" page and clear its content
+  figma.currentPage = indexPage;
+  for (const node of indexPage.children) {
+    node.remove();
+  }
+
+  // Create the index frame as an auto-layout frame
+  const indexFrame = figma.createFrame();
+  indexFrame.cornerRadius = 16;
+  indexFrame.layoutMode = "VERTICAL";
+  indexFrame.primaryAxisSizingMode = "AUTO"; // Auto height
+  indexFrame.counterAxisSizingMode = "AUTO"; // Fixed width
+  indexFrame.itemSpacing = 8; // No spacing between items
+  indexFrame.paddingTop = 24;
+  indexFrame.paddingBottom = 24;
+  indexFrame.paddingLeft = 24;
+  indexFrame.paddingRight = 24;
+  indexFrame.name = "Index";
+  indexPage.appendChild(indexFrame);
+
+  // Set up the position for the first item
+  let yPos = 0;
+
+  // Create index items
+  for (const page of figma.root.children) {
+    if (page.type === "PAGE" && page.name !== "📄 Index") {
+      const textNode = figma.createText();
+      await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+      textNode.fontName = { family: "Roboto", style: "Regular" };
+      textNode.fontSize = 16;
+      textNode.characters = page.name;
+      indexFrame.appendChild(textNode);
+
+      // Add a hyperlink to the textNode
+      textNode.hyperlink = {
+        type: "NODE",
+        value: page.id,
+      };
+
+      figma.viewport.scrollAndZoomIntoView([indexFrame]);
+    }
+  }
+}
+
+main().catch((err) => {
+  console.error(err);
+  figma.closePlugin();
+});
